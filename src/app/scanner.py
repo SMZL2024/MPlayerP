@@ -12,15 +12,16 @@ class Signals(QObject):
 
 
 class LibraryScanner(QRunnable):
-    def __init__(self, player: AudioPlayer, scanPath: str):
+    def __init__(self, player: AudioPlayer, scanPath: str = "/Users/samuelgonzalez/Documents/MUSICA"):
         super(LibraryScanner, self).__init__()
         self.signal = Signals()
-        self.scanPath = scanPath
+        self.scanPath = scanPath  # Ruta por defecto establecida
         self.audioPlayer = player
 
     def run(self) -> None:
         if not exists("conf/library.json"):
-            for file in get_files(self.scanPath, [".mp3"]):
+            # Modificar la ruta de escaneo aquí para buscar en la carpeta de música
+            for file in get_files(self.scanPath, [".mp3", ".flac", ".wav"]):  # Buscar múltiples tipos de archivos
                 self.audioPlayer.add_local_media(file)
             for media in self.audioPlayer.mediaList:
                 media.connect_event(MediaEvent.Parsed, lambda med: self.signal.scanned.emit(med))
